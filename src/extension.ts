@@ -39,7 +39,7 @@ const moveTabToNormalFirstIfNecessary = async () => {
 
 	// find active editor index excluding pinned and preview tabs
 	const activeEditorIndex = vscode.window.tabGroups.activeTabGroup.tabs
-		.filter((t) => !t.isPinned && !t.isPreview)
+		.filter((t) => !t.isPinned)
 		.findIndex((t) => t.isActive);
 	if (activeEditorIndex < numLeftTabs) {
 		return;
@@ -60,8 +60,7 @@ const removeExcessTabs = async () => {
 	}
 
 	const tabsToClose = normalTabs.filter(
-		(t, index) =>
-			!t.isPinned && !t.isPreview && !t.isDirty && index >= numMaxTabs,
+		(t, index) => !t.isPinned && !t.isDirty && index >= numMaxTabs,
 	);
 
 	for (const tab of tabsToClose) {
