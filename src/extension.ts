@@ -1,26 +1,88 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
-import * as vscode from 'vscode';
+import * as vscode from "vscode";
+import z from "zod";
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
+const ConfigSchema = z.object({
+	numLeftTabs: z.number(),
+	numMaxTabs: z.number(),
+	delayMs: z.number(),
+});
+type Config = z.infer<typeof ConfigSchema>;
+
+const getConfig = (): Config => {
+	const config = vscode.workspace.getConfiguration("auto-tab-closer");
+	return ConfigSchema.parse({
+		numLeftTabs: config.get<number>("numLeftTabs", 3),
+		numMaxTabs: config.get<number>("numMaxTabs", 10),
+		delayMs: config.get<number>("delayMs", 1000),
+	});
+};
+
+const debounce = (func: () => void, delayMs: number) => {
+	let timeout: NodeJS.Timeout;
+	return () => {
+		if (timeout) {
+			clearTimeout(timeout);
+		}
+		timeout = setTimeout(() => {
+			func();
+		}, delayMs);
+	};
+};
+
+const findNormalTabStartIndex = () => {
+	const activeTabGroup = vscode.window.tabGroups.activeTabGroup;
+	return activeTabGroup.tabs.findIndex((t) => !t.isPinned);
+};
+
+const moveTabToNormalFirstIfNecessary = async () => {
+	const { numLeftTabs } = getConfig();
+
+	// find active editor index excluding pinned and preview tabs
+	const activeEditorIndex = vscode.window.tabGroups.activeTabGroup.tabs
+		.filter((t) => !t.isPinned && !t.isPreview)
+		.findIndex((t) => t.isActive);
+	if (activeEditorIndex < numLeftTabs) {
+		return;
+	}
+	await vscode.commands.executeCommand("moveActiveEditor", {
+		to: "position",
+		value: findNormalTabStartIndex() + 1,
+	});
+};
+
+const removeExcessTabs = async () => {
+	const { numMaxTabs } = getConfig();
+	const activeTabGroup = vscode.window.tabGroups.activeTabGroup;
+	const normalTabs = activeTabGroup.tabs.filter((t) => !t.isPinned);
+
+	if (normalTabs.length <= numMaxTabs) {
+		return;
+	}
+
+	const tabsToClose = normalTabs.filter(
+		(t, index) =>
+			!t.isPinned && !t.isPreview && !t.isDirty && index >= numMaxTabs,
+	);
+
+	for (const tab of tabsToClose) {
+		await vscode.window.tabGroups.close(tab);
+	}
+};
+
+const organizeTabs = () => {
+	moveTabToNormalFirstIfNecessary();
+	removeExcessTabs();
+};
+
 export function activate(context: vscode.ExtensionContext) {
+	const { delayMs } = getConfig();
+	const debouncedOrganizeTabs = debounce(organizeTabs, delayMs);
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "vscode-auto-tab-closer" is now active!');
-
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	const disposable = vscode.commands.registerCommand('vscode-auto-tab-closer.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from Auto Tab Closer!');
+	const disposable = vscode.window.tabGroups.onDidChangeTabs(async (_) => {
+		debouncedOrganizeTabs();
 	});
 
 	context.subscriptions.push(disposable);
 }
 
-// This method is called when your extension is deactivated
 export function deactivate() {}
