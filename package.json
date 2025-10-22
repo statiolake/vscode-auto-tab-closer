@@ -1,61 +1,72 @@
 {
-  "name": "vscode-auto-tab-closer",
-  "displayName": "Auto Tab Closer",
-  "description": "",
-  "version": "0.0.1",
-  "engines": {
-    "vscode": "^1.105.0"
-  },
-  "categories": [
-    "Other"
-  ],
-  "activationEvents": [
-    "onStartupFinished"
-  ],
-  "main": "./out/extension.js",
-  "contributes": {
-    "configuration": {
-      "title": "Auto Tab Closer",
-      "properties": {
-        "auto-tab-closer.numLeftTabs": {
-          "type": "number",
-          "default": 3,
-          "description": "Number of tabs to keep at the left side (pinned/protected)"
-        },
-        "auto-tab-closer.numMaxTabs": {
-          "type": "number",
-          "default": 10,
-          "description": "Maximum number of normal tabs to keep open before automatically closing oldest tabs"
-        },
-        "auto-tab-closer.delayMs": {
-          "type": "number",
-          "default": 1000,
-          "description": "Delay in milliseconds before closing excess tabs after a tab change"
-        }
-      }
-    }
-  },
-  "scripts": {
-    "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
-    "pretest": "npm run compile && npm run lint",
-    "lint": "eslint src",
-    "test": "vscode-test"
-  },
-  "devDependencies": {
-    "@biomejs/biome": "2.2.7",
-    "@types/mocha": "^10.0.10",
-    "@types/node": "22.x",
-    "@types/vscode": "^1.105.0",
-    "@typescript-eslint/eslint-plugin": "^8.45.0",
-    "@typescript-eslint/parser": "^8.45.0",
-    "@vscode/test-cli": "^0.0.11",
-    "@vscode/test-electron": "^2.5.2",
-    "eslint": "^9.36.0",
-    "typescript": "^5.9.3"
-  },
-  "dependencies": {
-    "zod": "^4.1.12"
-  }
+	"name": "vscode-auto-tab-closer",
+	"displayName": "Auto Tab Closer",
+	"description": "Automatically manage and close excess tabs in VS Code to keep your workspace clean and organized",
+	"version": "0.0.1",
+	"license": "MIT",
+	"publisher": "statiolake",
+	"author": {
+		"name": "statiolake"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/statiolake/vscode-auto-tab-closer"
+	},
+	"engines": {
+		"vscode": "^1.105.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"onStartupFinished"
+	],
+	"main": "./out/extension.js",
+	"contributes": {
+		"configuration": {
+			"title": "Auto Tab Closer",
+			"properties": {
+				"auto-tab-closer.numLeftTabs": {
+					"type": "number",
+					"default": 3,
+					"description": "Number of tabs to keep at the left side (pinned/protected)"
+				},
+				"auto-tab-closer.numMaxTabs": {
+					"type": "number",
+					"default": 10,
+					"description": "Maximum number of normal tabs to keep open before automatically closing oldest tabs"
+				},
+				"auto-tab-closer.delayMs": {
+					"type": "number",
+					"default": 1000,
+					"description": "Delay in milliseconds before closing excess tabs after a tab change"
+				}
+			}
+		}
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -p ./",
+		"watch": "tsc -watch -p ./",
+		"pretest": "npm run compile && npm run lint",
+		"lint": "eslint src",
+		"test": "vscode-test",
+		"package": "vsce package"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "2.2.7",
+		"@types/mocha": "^10.0.10",
+		"@types/node": "22.x",
+		"@types/vscode": "^1.105.0",
+		"@typescript-eslint/eslint-plugin": "^8.45.0",
+		"@typescript-eslint/parser": "^8.45.0",
+		"@vscode/test-cli": "^0.0.11",
+		"@vscode/test-electron": "^2.5.2",
+		"@vscode/vsce": "^3.6.2",
+		"eslint": "^9.36.0",
+		"typescript": "^5.9.3"
+	},
+	"dependencies": {
+		"zod": "^4.1.12"
+	}
 }

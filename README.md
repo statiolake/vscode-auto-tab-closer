@@ -1,71 +1,75 @@
-# vscode-auto-tab-closer README
+# Auto Tab Closer
 
-This is the README for your extension "vscode-auto-tab-closer". After writing up a brief description, we recommend including the following sections.
+Automatically manage your VS Code tabs with intelligent closing and organization. Keep your workspace clean and focused by automatically closing excess tabs while protecting the ones you care about.
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+✨ **Smart Tab Management**
+- Automatically closes excess tabs when you exceed a maximum limit
+- Protects dirty (unsaved) tabs from being closed
+- Preserves pinned tabs (never closes them)
 
-For example if there is an image subfolder under your extension project workspace:
+🎯 **Customizable Protection**
+- Keep a configurable number of tabs on the left side protected
+- Perfect for keeping your most-used files accessible
 
-\!\[feature X\]\(images/feature-x.png\)
+⚡ **Debounced Closing**
+- Configurable delay before closing tabs
+- Prevents aggressive closing on rapid tab switches
+- Smooth, non-intrusive behavior
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+## How It Works
 
-## Requirements
-
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+1. You open tabs in VS Code as usual
+2. When the number of open tabs exceeds `numMaxTabs`, the oldest tabs are automatically closed
+3. Tabs within the first `numLeftTabs` positions are protected from automatic closing
+4. Dirty (unsaved) tabs are always protected
+5. The closing action is debounced by `delayMs` to avoid aggressive behavior
 
 ## Extension Settings
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
 This extension contributes the following settings:
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+- `auto-tab-closer.numLeftTabs` (default: `3`)
+  - Number of tabs to keep protected at the left side
+
+- `auto-tab-closer.numMaxTabs` (default: `10`)
+  - Maximum number of normal (non-pinned) tabs to keep open
+  - When exceeded, the oldest tabs are automatically closed
+
+- `auto-tab-closer.delayMs` (default: `1000`)
+  - Delay in milliseconds before closing excess tabs after a tab change
+  - Prevents rapid tab closures when switching between files
+
+## Example Configuration
+
+Add to your `.vscode/settings.json`:
+
+```json
+{
+  "auto-tab-closer.numLeftTabs": 5,
+  "auto-tab-closer.numMaxTabs": 15,
+  "auto-tab-closer.delayMs": 500
+}
+```
+
+## Requirements
+
+- VS Code 1.105.0 or later
 
 ## Known Issues
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+None at this time. Please [report any issues](https://github.com/statiolake/vscode-auto-tab-closer/issues) you encounter!
 
 ## Release Notes
 
-Users appreciate release notes as you update your extension.
+### 0.0.1
 
-### 1.0.0
+Initial release of Auto Tab Closer with core features:
+- Automatic excess tab closing
+- Configurable protection zones
+- Debounced tab closing for smooth operation
 
-Initial release of ...
+## License
 
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
-
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+MIT
