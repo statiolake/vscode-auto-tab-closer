@@ -21,6 +21,9 @@
 	"activationEvents": [
 		"onStartupFinished"
 	],
+	"extensionKind": [
+		"ui"
+	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"configuration": {
