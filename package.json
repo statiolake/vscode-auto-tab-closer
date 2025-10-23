@@ -2,7 +2,7 @@
 	"name": "vscode-auto-tab-closer",
 	"displayName": "Auto Tab Closer",
 	"description": "Automatically manage and close excess tabs in VS Code to keep your workspace clean and organized",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"license": "MIT",
 	"publisher": "statiolake",
 	"author": {
