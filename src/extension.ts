@@ -34,27 +34,32 @@ const findNormalTabStartIndex = () => {
 	return activeTabGroup.tabs.findIndex((t) => !t.isPinned);
 };
 
+const findActiveTabIndex = () => {
+	const activeTabGroup = vscode.window.tabGroups.activeTabGroup;
+	return activeTabGroup.tabs.findIndex((t) => t.isActive);
+};
+
 const moveTabToNormalFirstIfNecessary = async () => {
 	const { numLeftTabs } = getConfig();
 
 	// find active editor index excluding pinned and preview tabs
-	const activeEditorIndex = vscode.window.tabGroups.activeTabGroup.tabs
-		.filter((t) => !t.isPinned)
-		.findIndex((t) => t.isActive);
-	if (activeEditorIndex < numLeftTabs) {
+	const normalTabStartIndex = findNormalTabStartIndex();
+	const activeTabIndex = findActiveTabIndex();
+	if (activeTabIndex - normalTabStartIndex < numLeftTabs) {
 		return;
 	}
+
 	await vscode.commands.executeCommand("moveActiveEditor", {
 		to: "position",
-		value: findNormalTabStartIndex() + 1,
+		value: normalTabStartIndex + 1, // 1-indexed
 	});
 };
 
 const removeExcessTabs = async () => {
 	const { numMaxTabs } = getConfig();
+
 	const activeTabGroup = vscode.window.tabGroups.activeTabGroup;
 	const normalTabs = activeTabGroup.tabs.filter((t) => !t.isPinned);
-
 	if (normalTabs.length <= numMaxTabs) {
 		return;
 	}
@@ -68,18 +73,21 @@ const removeExcessTabs = async () => {
 	}
 };
 
-const organizeTabs = () => {
-	moveTabToNormalFirstIfNecessary();
-	removeExcessTabs();
+const organizeTabs = async () => {
+	await moveTabToNormalFirstIfNecessary();
+	await removeExcessTabs();
 };
 
 export function activate(context: vscode.ExtensionContext) {
 	const { delayMs } = getConfig();
-	const debouncedOrganizeTabs = debounce(organizeTabs, delayMs);
 
-	const disposable = vscode.window.tabGroups.onDidChangeTabs(async (_) => {
+	const debouncedOrganizeTabs = debounce(organizeTabs, delayMs);
+	const disposable = vscode.window.tabGroups.onDidChangeTabs((_) => {
 		debouncedOrganizeTabs();
 	});
+
+	// Initial organization on activation
+	void organizeTabs();
 
 	context.subscriptions.push(disposable);
 }
